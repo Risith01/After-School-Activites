@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afterschool Adventures</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            color: #2d3436;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        h1 {
+            text-align: center;
+            color: #0984e3;
+            font-size: 3em;
+            margin: 50px 0 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 2px 10px rgba(9, 132, 227, 0.3);
+            animation: fadeIn 1s ease-in;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        .activity-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+        .activity-card {
+            background: linear-gradient(145deg, #ffffff, #f1f2f6);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid rgba(9, 132, 227, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .activity-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        .activity-card h3 {
+            margin: 0 0 15px;
+            color: #0984e3;
+            font-size: 1.6em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+        .activity-card h3::before {
+            content: '★';
+            color: #fdcb6e;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .activity-card p {
+            margin: 10px 0;
+            color: #636e72;
+            font-size: 1em;
+        }
+        .activity-card .price {
+            font-weight: bold;
+            color: #00b894;
+            font-size: 1.1em;
+        }
+        .activity-card .inventory {
+            color: #e17055;
+            font-style: italic;
+            font-size: 0.95em;
+        }
+        .activity-card img {
+            max-width: 70%;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .activity-card img:hover {
+            transform: scale(1.03);
+        }
+        .activity-card button {
+            background: linear-gradient(45deg, #0984e3, #74b9ff);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .activity-card button::after {
+            content: '➜';
+            margin-left: 8px;
+            font-size: 1.2em;
+        }
+        .activity-card button:hover {
+            background: linear-gradient(45deg, #0652dd, #0984e3);
+            transform: scale(1.08);
+            box-shadow: 0 5px 15px rgba(9, 132, 227, 0.4);
+        }
+        .activity-card button:disabled {
+            background: #b2bec3;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        #cart-summary {
+            margin: 60px 20px;
+            text-align: right;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        #cart-total {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #00b894;
+        }
+        #checkout-btn, #complete-checkout-btn, #back-btn, #confirm-btn, #cancel-btn {
+            background: linear-gradient(45deg, #e17055, #ff9f43);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 600;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+        #checkout-btn:hover, #complete-checkout-btn:hover, #back-btn:hover, #confirm-btn:hover, #cancel-btn:hover {
+            background: linear-gradient(45deg, #d63031, #e17055);
+            transform: scale(1.08);
+            box-shadow: 0 5px 15px rgba(230, 76, 60, 0.4);
+        }
+        #checkout-section {
+            margin: 60px 20px;
+            background: linear-gradient(145deg, #ffffff, #f1f2f6);
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border: 2px solid rgba(9, 132, 227, 0.1);
+        }
+        #checkout-section h2 {
+            color: #0984e3;
+            font-size: 2em;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        #cart-items {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 25px;
+        }
+        #cart-items li {
+            padding: 15px 0;
+            border-bottom: 1px dashed #dfe6e9;
+            font-size: 1.2em;
+            color: #2d3436;
+            display: flex;
+            justify-content: space-between;
+            transition: background 0.2s ease;
+        }
+        #cart-items li:hover {
+            background: rgba(9, 132, 227, 0.05);
+        }
+        #cart-items li:last-child {
+            border-bottom: none;
+        }
+        #checkout-section p {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #00b894;
+            margin: 25px 0;
+        }
+        #back-btn {
+            background: linear-gradient(45deg, #0984e3, #74b9ff);
+            margin-top: 20px;
+        }
+        #back-btn:hover {
+            background: linear-gradient(45deg, #0652dd, #0984e3);
+        }
+        .hidden {
+            display: none;
+        }
+        .input-section {
+            margin: 25px 0;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .input-section input, .input-section textarea, .input-section select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #dfe6e9;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+        .input-section input:focus, .input-section textarea:focus, .input-section select:focus {
+            border-color: #0984e3;
+            outline: none;
+        }
+        .input-section label {
+            font-size: 0.95em;
+            color: #636e72;
+            margin-left: 5px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: linear-gradient(145deg, #ffffff, #f1f2f6);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 550px;
+            width: 90%;
+            text-align: center;
+            border: 2px solid rgba(9, 132, 227, 0.1);
+            animation: slideIn 0.4s ease;
+        }
+        .modal-content h3 {
+            color: #0984e3;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .modal-content p {
+            color: #2d3436;
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
+        .modal-buttons {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        #confirm-btn {
+            background: linear-gradient(45deg, #00b894, #55efc4);
+        }
+        #confirm-btn:hover {
+            background: linear-gradient(45deg, #009d77, #00b894);
+        }
+        #cancel-btn {
+            background: linear-gradient(45deg, #b2bec3, #dfe6e9);
+        }
+        #cancel-btn:hover {
+            background: linear-gradient(45deg, #95a5a6, #b2bec3);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+<body>
+    <div id="app">
+        <h1 v-text="title"></h1>
+        <div class="container">
+            <div class="activity-list" v-show="!isCheckoutActive">
+                <div class="activity-card" v-for="activity in activities" :key="activity.id">
+                    <h3 v-text="activity.name"></h3>
+                    <img :src="activity.image" alt="Activity Image" v-bind:style="{ display: activity.spots > 0 ? 'block' : 'none' }">
+                    <p v-html="activity.description"></p>
+                    <p class="price" v-text="'Price: $' + activity.price"></p>
+                    <p class="inventory" v-if="activity.spots > 0" v-text="'Spots Available: ' + activity.spots"></p>
+                    <p v-else>No spots available!</p>
+                    <button 
+                        @click="addToCart(activity)" 
+                        :disabled="activity.spots === 0"
+                        v-text="activity.spots > 0 ? 'Add to Cart' : 'Sold Out'"
+                    ></button>
+                </div>
+            </div>
+            <div id="cart-summary" v-show="!isCheckoutActive">
+                <p>Total: $<span v-text="cartTotal"></span></p>
+                <button id="checkout-btn" @click="showCheckout">Proceed to Checkout</button>
+            </div>
+            <div id="checkout-section" v-show="isCheckoutActive">
+                <h2>Your Cart</h2>
+                <ul id="cart-items">
+                    <li v-for="item in cart" :key="item.id" v-text="item.name + ' - $' + item.price"></li>
+                </ul>
+                <p>Total: $<span v-text="cartTotal"></span></p>
+                <div class="input-section">
+                    <input type="text" v-model="userName" placeholder="Your Name">
+                    <textarea v-model="userComments" placeholder="Additional Comments" rows="3"></textarea>
+                    <input type="checkbox" v-model="termsAccepted" id="terms">
+                    <label for="terms">I accept the terms</label>
+                    <select v-model="paymentMethod">
+                        <option value="">Select Payment Method</option>
+                        <option value="credit">Credit Card</option>
+                        <option value="paypal">PayPal</option>
+                        <option value="cash">Cash</option>
+                    </select>
+                </div>
+                <button id="complete-checkout-btn" @click="showPopup" :disabled="!termsAccepted || !paymentMethod">Complete Checkout</button>
+                <button id="back-btn" @click="hideCheckout">Back to Activities</button>
+            </div>
+            <div class="modal" :class="{ active: showModal }">
+                <div class="modal-content">
+                    <h3>Confirm Checkout</h3>
+                    <p v-if="cart.length > 0">Are you sure you want to complete your checkout?</p>
+                    <p v-else>Your cart is empty!</p>
+                    <p v-if="cart.length > 0">Total: $<span v-text="cartTotal"></span></p>
+                    <p v-if="cart.length > 0">Name: <span v-text="userName || 'Not provided'"></span></p>
+                    <p v-if="cart.length > 0">Payment: <span v-text="paymentMethod"></span></p>
+                    <div class="modal-buttons">
+                        <button id="confirm-btn" @click="completeCheckout" v-if="cart.length > 0">Confirm</button>
+                        <button id="cancel-btn" @click="hidePopup">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                title: 'Afterschool Adventures',
+                activities: [
+                { 
+                    id: 1, 
+                    name: 'Soccer Club', 
+                    description: 'Kick off fun with <b>soccer</b> skills!', 
+                    price: 50, 
+                    spots: 20, 
+                    image: 'soccer.jpg' 
+                    },
+                    { 
+                    id: 2, 
+                    name: 'Art Workshop', 
+                    description: 'Paint your <i>masterpiece</i> today!', 
+                    price: 35, 
+                    spots: 15, 
+                    image: 'art.png' 
+                    },
+                    { 
+                    id: 3, 
+                    name: 'Chess Class', 
+                    description: 'Master <u>strategy</u> with chess!', 
+                    price: 25,
+                    spots: 10, 
+                    image: 'chess.png' 
+                    },
+                    { 
+                    id: 4, 
+                    name: 'Robotics Lab', 
+                    description: 'Build <b>robots</b> from scratch!', 
+                    price: 75, 
+                    spots: 12, 
+                    image: 'robo.png' 
+                    },
+                    { 
+                    id: 5, 
+                    name: 'Dance Team', 
+                    description: 'Dance to <i>hip-hop</i> beats!', 
+                    price: 45, 
+                    spots: 18, 
+                    image: 'dance.jpg' 
+                    },
+                    { 
+                    id: 6, 
+                    name: 'Music Lessons', 
+                    description: 'Strum <u>guitar</u> or piano!', 
+                    price: 60, 
+                    spots: 8, 
+                    image: 'music.jpg' 
+                    },
+                    { 
+                    id: 7, 
+                    name: 'Science Club', 
+                    description: 'Discover <b>science</b> wonders!', 
+                    price: 40, 
+                    spots: 15, 
+                    image: 'science.jpg' 
+                    },
+                    { id: 8, 
+                    name: 'Coding Bootcamp', 
+                    description: 'Code with <i>Python</i> & JS!', 
+                    price: 80,
+                    spots: 10,
+                    image: 'code.png' 
+                    },
+                    { 
+                    id: 9, 
+                    name: 'Drama Class', 
+                    description: 'Act in <u>theater</u> fun!', 
+                    price: 30, 
+                    spots: 14, 
+                    image: 'drama.jpg' 
+                    },
+                    { 
+                    id: 10, 
+                    name: 'Swimming Lessons', 
+                    description: 'Swim with <b>pro</b> coaches!', 
+                    price: 55, 
+                    spots: 12, 
+                    image: 'swim.png'
+                    }
+                ],
+                cart: [],
+                cartTotal: 0,
+                isCheckoutActive: false,
+                userName: '',
+                userComments: '',
+                termsAccepted: false,
+                paymentMethod: '',
+                showModal: false
+            },
+            methods: {
+                addToCart(activity) {
+                    if (activity.spots > 0) {
+                        this.cart.push({ id: activity.id, name: activity.name, price: activity.price });
+                        activity.spots--;
+                        this.cartTotal += activity.price;
+                    }
+                },
+                showCheckout() {
+                    this.isCheckoutActive = true;
+                },
+                hideCheckout() {
+                    this.isCheckoutActive = false;
+                },
+                showPopup() {
+                    this.showModal = true;
+                },
+                hidePopup() {
+                    this.showModal = false;
+                },
+                completeCheckout() {
+                    if (this.cart.length === 0) {
+                        alert('Your cart is empty!');
+                    } else {
+                        alert(`Checkout complete! Total: $${this.cartTotal}\nName: ${this.userName}\nComments: ${this.userComments}\nPayment: ${this.paymentMethod}`);
+                        this.cart = [];
+                        this.cartTotal = 0;
+                        this.isCheckoutActive = false;
+                        this.userName = '';
+                        this.userComments = '';
+                        this.termsAccepted = false;
+                        this.paymentMethod = '';
+                    }
+                    this.showModal = false;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
